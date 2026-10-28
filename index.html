@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>居家照護管理系統</title>
+
+<style>
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Arial, "Noto Sans TC", sans-serif;
+}
+
+body {
+  background: #f8faf7;
+  color: #555;
+}
+
+.login-page {
+  min-height: 100vh;
+  padding: 48px 16px 30px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #e8ad31;
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 54px;
+}
+
+.brand-icon {
+  width: 52px;
+  height: 52px;
+  border: 3px solid #e8ad31;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 29px;
+  background: #e8ad31;
+  color: white;
+  box-shadow: inset 0 0 0 2px white;
+}
+
+.login-card {
+  width: min(470px, 100%);
+  background: white;
+  padding: 34px 24px 38px;
+  box-shadow: 0 8px 35px rgba(0,0,0,.07);
+  z-index: 1;
+}
+
+h2 {
+  font-size: 18px;
+  text-align: center;
+  margin: 0 0 42px;
+  font-weight: 600;
+  color: #555;
+}
+
+.field {
+  display: flex;
+  height: 40px;
+  margin-bottom: 23px;
+  border: 1px solid #a3d48b;
+  background: #e8f0fe;
+}
+
+.field-icon {
+  width: 43px;
+  display: grid;
+  place-items: center;
+  color: #70b84e;
+  background: #f7fff3;
+  font-size: 19px;
+}
+
+.field input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  outline: none;
+  padding: 0 10px;
+  background: transparent;
+  font-size: 14px;
+}
+
+.login-button {
+  margin-top: 14px;
+  height: 40px;
+  width: 100%;
+  background: #76b852;
+  color: white;
+  border: 0;
+  border-radius: 2px;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px #0002;
+}
+
+.login-button:hover {
+  background: #68a846;
+}
+
+.footer {
+  margin-top: 16px;
+  text-align: center;
+  color: #aaa;
+  line-height: 2;
+  font-size: 14px;
+}
+
+.footer small {
+  font-size: 11px;
+}
+
+.watermark {
+  position: fixed;
+  width: 260px;
+  height: 260px;
+  border: 6px solid #f8e6b7;
+  border-radius: 50%;
+  right: -105px;
+  bottom: -100px;
+  color: #f8e6b7;
+  font-size: 125px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* 恐怖畫面 */
+#scare {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#ghost {
+  width: min(100vw, 720px);
+  height: 88vh;
+  object-fit: contain;
+}
+
+#scare-text {
+  position: absolute;
+  bottom: 7%;
+  width: 100%;
+  text-align: center;
+  color: #eee;
+  font-size: clamp(28px, 7vw, 52px);
+  font-weight: bold;
+  letter-spacing: 8px;
+  text-shadow: 0 0 15px red, 0 0 30px #800;
+}
+
+#flash {
+  position: fixed;
+  inset: 0;
+  background: red;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 101;
+}
+
+@keyframes shake {
+  0%,100% { transform: translate(0,0); }
+  20% { transform: translate(-12px,8px) rotate(-2deg); }
+  40% { transform: translate(12px,-8px) rotate(2deg); }
+  60% { transform: translate(-8px,-5px); }
+  80% { transform: translate(8px,5px); }
+}
+
+@keyframes flicker {
+  0%,100% { opacity: 1; }
+  50% { opacity: .65; }
+}
+
+.shake {
+  animation: shake .15s linear infinite;
+}
+
+.flicker {
+  animation: flicker .12s steps(1) infinite;
+}
+
+@media(max-width:480px) {
+  .login-page { padding-top: 38px; }
+  .brand { margin-bottom: 40px; }
+  .login-card { padding: 30px 20px; }
+}
+</style>
+</head>
+
+<body>
+
+<main class="login-page" id="loginPage">
+
+  <div class="brand">
+    <img class="login-header-logo" src="header-logo.svg">
+    <span>
+      
+    </span>
+  </div>
+
+  <section class="login-card">
+    <h2>花蓮縣私立窩心居家長照機構</h2>
+
+    <form id="loginForm" autocomplete="off">
+      <div class="field">
+        <div class="field-icon">♟</div>
+        <input
+          type="text"
+          placeholder="使用者帳號"
+          aria-label="使用者帳號"
+          autocomplete="off">
+      </div>
+
+      <div class="field">
+        <div class="field-icon">🔑</div>
+        <input
+          type="password"
+          placeholder="密碼"
+          aria-label="密碼"
+          autocomplete="new-password">
+      </div>
+
+      <button class="login-button" type="submit">
+        ⇥ 登 入
+      </button>
+    </form>
+  </section>
+
+  <div class="footer">
+    © 2015 - 2026 巨安長齡股份有限公司
+<br>
+    <small>Version: 3.5.8.26879</small>
+  </div>
+
+  <div class="watermark">🌳</div>
+</main>
+
+<!-- 恐怖畫面 -->
+<div id="scare" role="alert">
+  <svg id="ghost" viewBox="0 0 500 650"
+       xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="skin">
+        <stop offset="0%" stop-color="#ddd"/>
+        <stop offset="65%" stop-color="#888"/>
+        <stop offset="100%" stop-color="#222"/>
+      </radialGradient>
+      <radialGradient id="eye">
+        <stop offset="0%" stop-color="#000"/>
+        <stop offset="100%" stop-color="#111"/>
+      </radialGradient>
+    </defs>
+
+    <rect width="500" height="650" fill="#020202"/>
+
+    <!-- 黑色長髮 -->
+    <path d="M65 650 Q10 300 65 100 Q130 0 250 35
+             Q390 -10 440 120 Q500 350 430 650
+             L370 650 L350 130 L150 130 L120 650 Z"
+          fill="#030303"/>
+
+    <path d="M90 90 Q30 330 115 630
+             M130 45 Q70 300 150 650
+             M380 60 Q440 300 380 650
+             M420 130 Q480 350 405 620"
+          stroke="#222" stroke-width="9" fill="none"/>
+
+    <!-- 蒼白鬼臉 -->
+    <path d="M110 150 Q125 60 250 70
+             Q375 60 390 150 L365 390
+             Q340 520 250 565 Q160 520 135 390 Z"
+          fill="url(#skin)"/>
+
+    <!-- 眼窩 -->
+    <ellipse cx="178" cy="250" rx="65" ry="57" fill="#080808"/>
+    <ellipse cx="322" cy="250" rx="65" ry="57" fill="#080808"/>
+    <ellipse cx="180" cy="254" rx="24" ry="31" fill="url(#eye)"/>
+    <ellipse cx="320" cy="254" rx="24" ry="31" fill="url(#eye)"/>
+    <circle cx="188" cy="243" r="6" fill="#eee"/>
+    <circle cx="312" cy="243" r="6" fill="#eee"/>
+
+    <!-- 鼻子 -->
+    <path d="M250 260 L222 340 L250 352 L278 340 Z"
+          fill="#444"/>
+
+    <!-- 張開的嘴 -->
+    <ellipse cx="250" cy="425" rx="72" ry="100"
+             fill="#080000" stroke="#333" stroke-width="9"/>
+
+    <path d="M190 368 L205 397 L220 370 L235 400
+             L250 368 L265 400 L280 370 L295 397 L310 368"
+          fill="#eee" stroke="#aaa" stroke-width="3"/>
+
+    <path d="M195 470 L212 450 L230 480 L250 450
+             L270 480 L288 450 L305 470"
+          fill="#eee" stroke="#aaa" stroke-width="3"/>
+
+    <!-- 血痕與暗影 -->
+    <path d="M150 280 Q145 310 160 330
+             M350 280 Q355 310 340 330"
+          stroke="#580000" stroke-width="7" fill="none"/>
+
+    <rect width="500" height="650" fill="#000" opacity=".18"/>
+  </svg>
+
+  <div id="scare-text">你看到了嗎？</div>
+</div>
+
+<div id="flash"></div>
+
+<script>
+const form = document.getElementById("loginForm");
+const loginPage = document.getElementById("loginPage");
+const scare = document.getElementById("scare");
+const ghost = document.getElementById("ghost");
+const flash = document.getElementById("flash");
+
+let triggered = false;
+let audioCtx;
+
+function playScream() {
+  try {
+    const AudioContext =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) return;
+
+    audioCtx = new AudioContext();
+
+    const now = audioCtx.currentTime;
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc1.type = "sawtooth";
+    osc2.type = "triangle";
+
+    osc1.frequency.setValueAtTime(850, now);
+    osc1.frequency.exponentialRampToValueAtTime(
+      1800, now + 0.25
+    );
+    osc1.frequency.exponentialRampToValueAtTime(
+      500, now + 1.4
+    );
+
+    osc2.frequency.setValueAtTime(1200, now);
+    osc2.frequency.exponentialRampToValueAtTime(
+      2200, now + 0.2
+    );
+    osc2.frequency.exponentialRampToValueAtTime(
+      350, now + 1.4
+    );
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.55, now + 0.08);
+    gain.gain.setValueAtTime(0.55, now + 0.4);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001, now + 1.6
+    );
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 1.7);
+    osc2.stop(now + 1.7);
+  } catch (e) {
+    console.log("音效無法播放");
+  }
+}
+
+function jumpScare() {
+  if (triggered) return;
+  triggered = true;
+
+  loginPage.style.display = "none";
+  scare.style.display = "flex";
+
+  playScream();
+
+  if (navigator.vibrate) {
+    navigator.vibrate([200, 80, 300, 80, 200]);
+  }
+
+  ghost.classList.add("shake");
+  scare.classList.add("flicker");
+
+  flash.style.opacity = "0.85";
+  setTimeout(() => {
+    flash.style.opacity = "0";
+  }, 100);
+
+  // 恐怖畫面持續顯示，不會自動關閉
+  setTimeout(() => {
+    ghost.classList.remove("shake");
+    scare.classList.remove("flicker");
+  }, 4500);
+}
+
+form.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  // 不驗證、不儲存、不傳送帳號或密碼
+  jumpScare();
+});
+</script>
+
+</body>
+</html>
